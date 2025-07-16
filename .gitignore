@@ -1,0 +1,29 @@
+# 1. Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# 2. Virtual environment folders
+venv/
+
+# 3. OS-specific system files
+.DS_Store
+Thumbs.db
+
+# 4. Streamlit cache/config
+.streamlit/
+
+# 5. Encrypted or sensitive data
+*.enc
+*.bin
+
+# 6. Compressed files or archives
+*.zip
+
+# 7. Optional: ignore data files if they're large or sensitive
+# Remove this line if you want to include data in your repo
+# data/
+
+# 8. Logs or temporary files (optional)
+*.log
+*.tmp

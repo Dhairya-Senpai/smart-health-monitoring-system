@@ -1,0 +1,13 @@
+pandas
+numpy
+scikit-learn
+cryptography
+pycryptodome
+streamlit
+flask
+matplotlib
+seaborn
+keras
+tensorflow
+ucimlrepo
+mlcroissant
