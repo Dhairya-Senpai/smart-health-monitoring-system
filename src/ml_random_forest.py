@@ -3,10 +3,19 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix
 
+
+from ml_utils import tune_random_forest, cross_validate_model, balance_data_smote
+
 def train_random_forest(X, y):
-    clf = RandomForestClassifier(n_estimators=100, random_state=42)
-    clf.fit(X, y)
-    return clf
+    # Balance data
+    X_res, y_res = balance_data_smote(X, y)
+    # Hyperparameter tuning
+    best_model, best_params, best_score = tune_random_forest(X_res, y_res)
+    # Cross-validation
+    cv_score, cv_scores = cross_validate_model(best_model, X_res, y_res)
+    print(f"Best RF params: {best_params}, GridSearchCV best score: {best_score}, CV mean: {cv_score}")
+    best_model.fit(X_res, y_res)
+    return best_model
 
 def evaluate_model(model, X_test, y_test):
     y_pred = model.predict(X_test)

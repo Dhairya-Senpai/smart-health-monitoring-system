@@ -7,22 +7,17 @@ from encryption import encrypt_data, decrypt_data
 import pandas as pd
 
 
+
 def main():
-    # Step 1: Load and preprocess UCI Heart Disease data
-
-    df = load_data("data/uci_heart_disease.csv")
-    # Strip spaces from column names
+    # Step 1: Load and preprocess combined Heart Disease data
+    df = load_data("data/combined_heart_disease.csv")
     df.columns = [c.strip() for c in df.columns]
-
-    # Select features and target
-    features = ['age', 'trestbps', 'thalach', 'chol', 'oldpeak']
     target = 'target'
+    # Use improved preprocessing
+    df = preprocess_data(df)
+    # Select features (all except target)
+    features = [c for c in df.columns if c != target]
     df = df.dropna(subset=features + [target])
-
-    # Preprocess features
-    from sklearn.preprocessing import StandardScaler
-    scaler = StandardScaler()
-    df[features] = scaler.fit_transform(df[features])
 
     # Step 2: Encrypt each patient record (features only)
     key = os.urandom(32)  # AES-256 key
@@ -33,7 +28,7 @@ def main():
         encrypted_records.append(encrypted)
 
     print("Encrypted patient records (hex):")
-    for enc in encrypted_records[:5]:  # Show only first 5 for brevity
+    for enc in encrypted_records[:5]:
         print(enc.hex())
 
     # Step 3: Decrypt records for ML prediction
@@ -44,16 +39,37 @@ def main():
         decrypted_data.append({f: float(v) for f, v in zip(features, vals)})
     df_decrypted = pd.DataFrame(decrypted_data)
 
-    # Step 4: ML prediction
+    # Step 4: ML prediction and evaluation
     X = df_decrypted[features]
     y = df[target].astype(int)
-    model = train_random_forest(X, y)
-    predictions = model.predict(X)
-    print("\nPredicted target (0=no disease, 1=disease):", predictions[:10])
+
+    print("\nTraining Random Forest...")
+    rf_model = train_random_forest(X, y)
+    rf_acc, rf_cm = evaluate_model(rf_model, X, y)
+    print(f"Random Forest Accuracy: {rf_acc}")
+    print(f"Random Forest Confusion Matrix:\n{rf_cm}")
+
+    print("\nTraining Neural Network...")
+    from ml_neural_net import train_mlp, evaluate_model as eval_mlp
+    nn_model = train_mlp(X, y)
+    nn_acc, nn_cm = eval_mlp(nn_model, X, y)
+    print(f"Neural Net Accuracy: {nn_acc}")
+    print(f"Neural Net Confusion Matrix:\n{nn_cm}")
 
     # Step 5: Optionally encrypt predictions
-    encrypted_preds = [encrypt_data(str(pred), key).hex() for pred in predictions[:10]]
-    print("\nEncrypted predictions (hex):", encrypted_preds)
+    rf_predictions = rf_model.predict(X)
+    nn_predictions = nn_model.predict(X)
+    encrypted_rf_preds = [encrypt_data(str(pred), key).hex() for pred in rf_predictions[:10]]
+    encrypted_nn_preds = [encrypt_data(str(pred), key).hex() for pred in nn_predictions[:10]]
+    print("\nEncrypted RF predictions (hex):", encrypted_rf_preds)
+    print("Encrypted NN predictions (hex):", encrypted_nn_preds)
+
+    # Step 6: Save models
+    import joblib
+    os.makedirs("models", exist_ok=True)
+    joblib.dump(rf_model, "models/random_forest_model.joblib")
+    joblib.dump(nn_model, "models/neural_net_model.joblib")
+    print("\nModels saved to models/ directory.")
 
 if __name__ == "__main__":
     main()

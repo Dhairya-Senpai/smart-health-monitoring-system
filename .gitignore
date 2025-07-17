@@ -27,3 +27,6 @@ Thumbs.db
 # 8. Logs or temporary files (optional)
 *.log
 *.tmp
+
+# 9. To work op
+.next-work.txt

@@ -1,13 +1,29 @@
+## Core ML/Data
 pandas
 numpy
 scikit-learn
+joblib
+imbalanced-learn
+
+## Security
 cryptography
 pycryptodome
+
+## UI
 streamlit
 flask
+
+## Visualization
 matplotlib
 seaborn
+
+## Deep Learning
 keras
 tensorflow
+
+## Data sources
 ucimlrepo
 mlcroissant
+kagglehub
+
+## Note: zipfile is part of Python standard library
