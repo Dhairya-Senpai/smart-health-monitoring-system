@@ -8,7 +8,11 @@ import os
 def encrypt_data(data, key):
     iv = os.urandom(16)
     padder = padding.PKCS7(128).padder()
-    padded_data = padder.update(data.encode()) + padder.finalize()
+    if isinstance(data, bytes):
+        data_bytes = data
+    else:
+        data_bytes = data.encode()
+    padded_data = padder.update(data_bytes) + padder.finalize()
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     encryptor = cipher.encryptor()
     ct = encryptor.update(padded_data) + encryptor.finalize()
@@ -22,7 +26,13 @@ def decrypt_data(encrypted, key):
     padded_data = decryptor.update(ct) + decryptor.finalize()
     unpadder = padding.PKCS7(128).unpadder()
     data = unpadder.update(padded_data) + unpadder.finalize()
-    return data.decode()
+    # If the data is text, decode; if binary (e.g. PDF), return bytes
+    def try_decode(d):
+        try:
+            return d.decode()
+        except UnicodeDecodeError:
+            return d
+    return try_decode(data)
     # ...existing code...
 
 if __name__ == "__main__":

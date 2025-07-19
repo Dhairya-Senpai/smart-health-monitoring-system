@@ -18,6 +18,7 @@ matplotlib
 seaborn
 
 ## Deep Learning
+PyPDF2
 keras
 tensorflow
 
@@ -25,5 +26,3 @@ tensorflow
 ucimlrepo
 mlcroissant
 kagglehub
-
-## Note: zipfile is part of Python standard library

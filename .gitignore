@@ -22,7 +22,9 @@ Thumbs.db
 
 # 7. Optional: ignore data files if they're large or sensitive
 # Remove this line if you want to include data in your repo
-# data/
+data/feedback
+data/reports
+docs
 
 # 8. Logs or temporary files (optional)
 *.log
